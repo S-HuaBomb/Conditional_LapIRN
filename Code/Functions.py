@@ -12,37 +12,39 @@ def generate_grid(imgshape):
     y = np.arange(imgshape[1])
     z = np.arange(imgshape[2])
     grid = np.rollaxis(np.array(np.meshgrid(z, y, x)), 0, 4)
-    grid = np.swapaxes(grid,0,2)
-    grid = np.swapaxes(grid,1,2)
+    grid = np.swapaxes(grid, 0, 2)
+    grid = np.swapaxes(grid, 1, 2)
     return grid
+
 
 # (grid[0, :, :, :, 0] - (size_tensor[3] / 2)) / size_tensor[3] * 2
 def generate_grid_unit(imgshape):
-    x = (np.arange(imgshape[0]) - ((imgshape[0]-1)/2)) / (imgshape[0]-1) * 2
-    y = (np.arange(imgshape[1]) - ((imgshape[1]-1)/2)) / (imgshape[1]-1) * 2
-    z = (np.arange(imgshape[2]) - ((imgshape[2]-1)/2)) / (imgshape[2]-1) * 2
+    x = (np.arange(imgshape[0]) - ((imgshape[0] - 1) / 2)) / (imgshape[0] - 1) * 2
+    y = (np.arange(imgshape[1]) - ((imgshape[1] - 1) / 2)) / (imgshape[1] - 1) * 2
+    z = (np.arange(imgshape[2]) - ((imgshape[2] - 1) / 2)) / (imgshape[2] - 1) * 2
     grid = np.rollaxis(np.array(np.meshgrid(z, y, x)), 0, 4)
-    grid = np.swapaxes(grid,0,2)
-    grid = np.swapaxes(grid,1,2)
+    grid = np.swapaxes(grid, 0, 2)
+    grid = np.swapaxes(grid, 1, 2)
     return grid
 
 
 def transform_unit_flow_to_flow(flow):
     x, y, z, _ = flow.shape
-    flow[:, :, :, 0] = flow[:, :, :, 0] * (z-1)
-    flow[:, :, :, 1] = flow[:, :, :, 1] * (y-1)
-    flow[:, :, :, 2] = flow[:, :, :, 2] * (x-1)
+    flow[:, :, :, 0] = flow[:, :, :, 0] * (z - 1)
+    flow[:, :, :, 1] = flow[:, :, :, 1] * (y - 1)
+    flow[:, :, :, 2] = flow[:, :, :, 2] * (x - 1)
 
     return flow
 
 
 def transform_unit_flow_to_flow_cuda(flow):
     b, x, y, z, c = flow.shape
-    flow[:, :, :, :, 0] = flow[:, :, :, :, 0] * (z-1)
-    flow[:, :, :, :, 1] = flow[:, :, :, :, 1] * (y-1)
-    flow[:, :, :, :, 2] = flow[:, :, :, :, 2] * (x-1)
+    flow[:, :, :, :, 0] = flow[:, :, :, :, 0] * (z - 1)
+    flow[:, :, :, :, 1] = flow[:, :, :, :, 1] * (y - 1)
+    flow[:, :, :, :, 2] = flow[:, :, :, :, 2] * (x - 1)
 
     return flow
+
 
 def load_4D(name):
     # X = sitk.GetArrayFromImage(sitk.ReadImage(name, sitk.sitkFloat32 ))
@@ -57,8 +59,9 @@ def load_5D(name):
     # X = sitk.GetArrayFromImage(sitk.ReadImage(name, sitk.sitkFloat32 ))
     X = fixed_nii = nib.load(name)
     X = X.get_fdata()
-    X = np.reshape(X, (1,)+(1,)+ X.shape)
+    X = np.reshape(X, (1,) + (1,) + X.shape)
     return X
+
 
 def imgnorm(img):
     max_v = np.max(img)
@@ -66,7 +69,8 @@ def imgnorm(img):
     norm_img = (img - min_v) / (max_v - min_v)
     return norm_img
 
-def save_img(I_img,savename):
+
+def save_img(I_img, savename):
     # I2 = sitk.GetImageFromArray(I_img,isVector=False)
     # sitk.WriteImage(I2,savename)
     affine = np.diag([1, 1, 1, 1])
@@ -75,7 +79,7 @@ def save_img(I_img,savename):
     nib.save(new_img, savename)
 
 
-def save_img_nii(I_img,savename):
+def save_img_nii(I_img, savename):
     # I2 = sitk.GetImageFromArray(I_img,isVector=False)
     # sitk.WriteImage(I2,savename)
     affine = np.diag([1, 1, 1, 1])
@@ -84,7 +88,7 @@ def save_img_nii(I_img,savename):
     nib.save(new_img, savename)
 
 
-def save_flow(I_img,savename):
+def save_flow(I_img, savename):
     # I2 = sitk.GetImageFromArray(I_img,isVector=True)
     # sitk.WriteImage(I2,savename)
     affine = np.diag([1, 1, 1, 1])
@@ -93,20 +97,22 @@ def save_flow(I_img,savename):
 
 
 class Dataset(Data.Dataset):
-  'Characterizes a dataset for PyTorch'
-  def __init__(self, names,iterations,norm=False):
+    'Characterizes a dataset for PyTorch'
+
+    def __init__(self, names, iterations, norm=False):
         'Initialization'
         self.names = names
         self.norm = norm
         self.iterations = iterations
-  def __len__(self):
+
+    def __len__(self):
         'Denotes the total number of samples'
         return self.iterations
 
-  def __getitem__(self, step):
+    def __getitem__(self, step):
         'Generates one sample of data'
         # Select sample
-        index_pair = np.random.permutation(len(self.names)) [0:2]
+        index_pair = np.random.permutation(len(self.names))[0:2]
         img_A = load_4D(self.names[index_pair[0]])
         img_B = load_4D(self.names[index_pair[1]])
         if self.norm:
@@ -116,18 +122,19 @@ class Dataset(Data.Dataset):
 
 
 class Dataset_epoch(Data.Dataset):
-  'Characterizes a dataset for PyTorch'
-  def __init__(self, names, norm=False):
+    'Characterizes a dataset for PyTorch'
+
+    def __init__(self, names, norm=False):
         'Initialization'
         self.names = names
         self.norm = norm
         self.index_pair = list(itertools.permutations(names, 2))
 
-  def __len__(self):
+    def __len__(self):
         'Denotes the total number of samples'
         return len(self.index_pair)
 
-  def __getitem__(self, step):
+    def __getitem__(self, step):
         'Generates one sample of data'
         # Select sample
         img_A = load_4D(self.index_pair[step][0])
@@ -205,9 +212,9 @@ if __name__ == '__main__':
 
     grid = generate_grid_unit((5, 6, 7))
 
-    print(grid[:, :, :, 0].min(), grid[:, :, :, 0].max()) # -1, 1
-    print(grid[:, :, :, 1].min(), grid[:, :, :, 1].max()) # -1, 1
-    print(grid[:, :, :, 2].min(), grid[:, :, :, 2].max()) # -1, 1
+    print(grid[:, :, :, 0].min(), grid[:, :, :, 0].max())  # -1, 1
+    print(grid[:, :, :, 1].min(), grid[:, :, :, 1].max())  # -1, 1
+    print(grid[:, :, :, 2].min(), grid[:, :, :, 2].max())  # -1, 1
 
     grid = generate_grid((5, 6, 7))
     # print(grid[:, :, :, 0]) # 0-6

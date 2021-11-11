@@ -61,7 +61,8 @@ model_name = "LDR_OASIS_NCC_unit_disp_add_fea7_reg01_10_testing_"
 
 def train_lvl1():
     print("Training lvl1...")
-    model = Miccai2021_LDR_conditional_laplacian_unit_disp_add_lvl1(2, 3, start_channel, is_train=True, imgshape=imgshape_4,
+    model = Miccai2021_LDR_conditional_laplacian_unit_disp_add_lvl1(2, 3, start_channel, is_train=True,
+                                                                    imgshape=imgshape_4,
                                                                     range_flow=range_flow).cuda()
 
     loss_similarity = NCC(win=3)
@@ -79,7 +80,6 @@ def train_lvl1():
 
     grid_4 = generate_grid(imgshape_4)
     grid_4 = torch.from_numpy(np.reshape(grid_4, (1,) + grid_4.shape)).cuda().float()
-
 
     optimizer = torch.optim.Adam(model.parameters(), lr=lr)
     # optimizer = torch.optim.SGD(model.parameters(), lr=lr, momentum=0.9)
@@ -119,9 +119,9 @@ def train_lvl1():
 
             _, _, x, y, z = F_X_Y.shape
             norm_vector = torch.zeros((1, 3, 1, 1, 1), dtype=F_X_Y.dtype, device=F_X_Y.device)
-            norm_vector[0, 0, 0, 0, 0] = (z-1)
-            norm_vector[0, 1, 0, 0, 0] = (y-1)
-            norm_vector[0, 2, 0, 0, 0] = (x-1)
+            norm_vector[0, 0, 0, 0, 0] = (z - 1)
+            norm_vector[0, 1, 0, 0, 0] = (y - 1)
+            norm_vector[0, 2, 0, 0, 0] = (x - 1)
             loss_regulation = loss_smooth(F_X_Y * norm_vector)
 
             smo_weight = reg_code * max_smooth
@@ -167,7 +167,8 @@ def train_lvl2():
     for param in model_lvl1.parameters():
         param.requires_grad = False
 
-    model = Miccai2021_LDR_conditional_laplacian_unit_disp_add_lvl2(2, 3, start_channel, is_train=True, imgshape=imgshape_2,
+    model = Miccai2021_LDR_conditional_laplacian_unit_disp_add_lvl2(2, 3, start_channel, is_train=True,
+                                                                    imgshape=imgshape_2,
                                                                     range_flow=range_flow, model_lvl1=model_lvl1).cuda()
 
     loss_similarity = multi_resolution_NCC(win=5, scale=2)
@@ -224,9 +225,9 @@ def train_lvl2():
 
             _, _, x, y, z = F_X_Y.shape
             norm_vector = torch.zeros((1, 3, 1, 1, 1), dtype=F_X_Y.dtype, device=F_X_Y.device)
-            norm_vector[0, 0, 0, 0, 0] = (z-1)
-            norm_vector[0, 1, 0, 0, 0] = (y-1)
-            norm_vector[0, 2, 0, 0, 0] = (x-1)
+            norm_vector[0, 0, 0, 0, 0] = (z - 1)
+            norm_vector[0, 1, 0, 0, 0] = (y - 1)
+            norm_vector[0, 2, 0, 0, 0] = (x - 1)
             loss_regulation = loss_smooth(F_X_Y * norm_vector)
 
             smo_weight = reg_code * max_smooth
@@ -268,7 +269,8 @@ def train_lvl3():
                                                                          range_flow=range_flow).cuda()
     model_lvl2 = Miccai2021_LDR_conditional_laplacian_unit_disp_add_lvl2(2, 3, start_channel, is_train=True,
                                                                          imgshape=imgshape_2,
-                                                                         range_flow=range_flow, model_lvl1=model_lvl1).cuda()
+                                                                         range_flow=range_flow,
+                                                                         model_lvl1=model_lvl1).cuda()
 
     model_path = sorted(glob.glob("../Model/Stage/" + model_name + "stagelvl2_?????.pth"))[-1]
     model_lvl2.load_state_dict(torch.load(model_path))
@@ -278,7 +280,8 @@ def train_lvl3():
     for param in model_lvl2.parameters():
         param.requires_grad = False
 
-    model = Miccai2021_LDR_conditional_laplacian_unit_disp_add_lvl3(2, 3, start_channel, is_train=True, imgshape=imgshape,
+    model = Miccai2021_LDR_conditional_laplacian_unit_disp_add_lvl3(2, 3, start_channel, is_train=True,
+                                                                    imgshape=imgshape,
                                                                     range_flow=range_flow, model_lvl2=model_lvl2).cuda()
 
     loss_similarity = multi_resolution_NCC(win=7, scale=3)
@@ -339,9 +342,9 @@ def train_lvl3():
 
             _, _, x, y, z = F_X_Y.shape
             norm_vector = torch.zeros((1, 3, 1, 1, 1), dtype=F_X_Y.dtype, device=F_X_Y.device)
-            norm_vector[0, 0, 0, 0, 0] = (z-1)
-            norm_vector[0, 1, 0, 0, 0] = (y-1)
-            norm_vector[0, 2, 0, 0, 0] = (x-1)
+            norm_vector[0, 0, 0, 0, 0] = (z - 1)
+            norm_vector[0, 1, 0, 0, 0] = (y - 1)
+            norm_vector[0, 2, 0, 0, 0] = (x - 1)
             loss_regulation = loss_smooth(F_X_Y * norm_vector)
 
             smo_weight = reg_code * max_smooth
