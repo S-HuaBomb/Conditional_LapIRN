@@ -9,7 +9,6 @@ from miccai2021_model import Miccai2021_LDR_conditional_laplacian_unit_disp_add_
     Miccai2021_LDR_conditional_laplacian_unit_disp_add_lvl2, Miccai2021_LDR_conditional_laplacian_unit_disp_add_lvl3, \
     SpatialTransform_unit, SpatialTransformNearest_unit
 
-
 parser = ArgumentParser()
 parser.add_argument("--modelpath", type=str,
                     dest="modelpath", default='../Model/LDR_OASIS_NCC_unit_disp_add_fea7_reg01_10.pth',
@@ -44,14 +43,17 @@ reg_input = opt.reg_input
 def test():
     print("Current reg_input: ", str(reg_input))
 
-    model_lvl1 = Miccai2021_LDR_conditional_laplacian_unit_disp_add_lvl1(2, 3, start_channel, is_train=True, imgshape=imgshape_4,
+    model_lvl1 = Miccai2021_LDR_conditional_laplacian_unit_disp_add_lvl1(2, 3, start_channel, is_train=True,
+                                                                         imgshape=imgshape_4,
                                                                          range_flow=range_flow).cuda()
-    model_lvl2 = Miccai2021_LDR_conditional_laplacian_unit_disp_add_lvl2(2, 3, start_channel, is_train=True, imgshape=imgshape_2,
-                                                                         range_flow=range_flow, model_lvl1=model_lvl1).cuda()
+    model_lvl2 = Miccai2021_LDR_conditional_laplacian_unit_disp_add_lvl2(2, 3, start_channel, is_train=True,
+                                                                         imgshape=imgshape_2,
+                                                                         range_flow=range_flow,
+                                                                         model_lvl1=model_lvl1).cuda()
 
-    model = Miccai2021_LDR_conditional_laplacian_unit_disp_add_lvl3(2, 3, start_channel, is_train=False, imgshape=imgshape,
+    model = Miccai2021_LDR_conditional_laplacian_unit_disp_add_lvl3(2, 3, start_channel, is_train=False,
+                                                                    imgshape=imgshape,
                                                                     range_flow=range_flow, model_lvl2=model_lvl2).cuda()
-
 
     transform = SpatialTransform_unit().cuda()
     transform_nearest = SpatialTransformNearest_unit().cuda()

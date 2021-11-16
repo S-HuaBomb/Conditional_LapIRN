@@ -97,20 +97,20 @@ def save_flow(I_img, savename):
 
 
 class Dataset(Data.Dataset):
-    'Characterizes a dataset for PyTorch'
+    """Characterizes a dataset for PyTorch"""
 
     def __init__(self, names, iterations, norm=False):
-        'Initialization'
+        """Initialization"""
         self.names = names
         self.norm = norm
         self.iterations = iterations
 
     def __len__(self):
-        'Denotes the total number of samples'
+        """Denotes the total number of samples"""
         return self.iterations
 
     def __getitem__(self, step):
-        'Generates one sample of data'
+        """Generates one sample of data"""
         # Select sample
         index_pair = np.random.permutation(len(self.names))[0:2]
         img_A = load_4D(self.names[index_pair[0]])
@@ -122,20 +122,20 @@ class Dataset(Data.Dataset):
 
 
 class Dataset_epoch(Data.Dataset):
-    'Characterizes a dataset for PyTorch'
+    """Characterizes a dataset for PyTorch"""
 
     def __init__(self, names, norm=False):
-        'Initialization'
+        """Initialization"""
         self.names = names
         self.norm = norm
         self.index_pair = list(itertools.permutations(names, 2))
 
     def __len__(self):
-        'Denotes the total number of samples'
+        """Denotes the total number of samples"""
         return len(self.index_pair)
 
     def __getitem__(self, step):
-        'Generates one sample of data'
+        """Generates one sample of data"""
         # Select sample
         img_A = load_4D(self.index_pair[step][0])
         img_B = load_4D(self.index_pair[step][1])
@@ -159,7 +159,7 @@ class Predict_dataset(Data.Dataset):
         self.norm = norm
 
     def __len__(self):
-        'Denotes the total number of samples'
+        """Denotes the total number of samples"""
         return len(self.move_list)
 
     def __getitem__(self, index):

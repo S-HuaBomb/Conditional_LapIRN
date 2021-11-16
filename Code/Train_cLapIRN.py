@@ -140,7 +140,7 @@ def train_lvl1():
             sys.stdout.flush()
 
             # with lr 1e-3 + with bias
-            if (step % n_checkpoint == 0):
+            if step % n_checkpoint == 0:
                 modelname = model_dir + '/' + model_name + "stagelvl1_" + str(step) + '.pth'
                 torch.save(model.state_dict(), modelname)
                 np.save(model_dir + '/loss' + model_name + "stagelvl1_" + str(step) + '.npy', lossall)
@@ -363,7 +363,7 @@ def train_lvl3():
             sys.stdout.flush()
 
             # with lr 1e-3 + with bias
-            if (step % n_checkpoint == 0):
+            if step % n_checkpoint == 0:
                 modelname = model_dir + '/' + model_name + "stagelvl3_" + str(step) + '.pth'
                 torch.save(model.state_dict(), modelname)
                 np.save(model_dir + '/loss' + model_name + "stagelvl3_" + str(step) + '.npy', lossall)
